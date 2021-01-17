@@ -1,10 +1,14 @@
 import Head from 'next/head';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import DropZone from '../components/DropZone';
 import styles from '../styles/Home.module.css';
 
+import { useFiles } from '../services';
+
 export default function Home() {
   const [files, setFiles] = useState<File[]>([]);
+
+  const { data, status } = useFiles();
 
   return (
     <div className={styles.container}>
@@ -15,6 +19,17 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1 className={styles.title}>Welcome to the upload example</h1>
+
+        {status === 'loading' && <h4>Carregando os arquivos</h4>}
+        {/* {status === 'success' && (
+          <ul className='p-4 bg-green-700'>
+            {data.map((file: any, index) => (
+              <li className='text-white font-medium ' key={`file` + index}>
+                {index + ` - ` + file.name}
+              </li>
+            ))}
+          </ul>
+        )} */}
 
         <DropZone
           selectedFiles={(files) => {
