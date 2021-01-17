@@ -13,6 +13,8 @@
     "class-validator": "^0.12.2",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "graphql-upload": "^11.0.0",
+    "reflect-metadata": "^0.1.13",
     "sqlite3": "^5.0.0",
     "type-graphql": "^1.1.1",
     "typeorm": "^0.2.29"

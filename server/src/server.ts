@@ -1,28 +1,25 @@
+import 'reflect-metadata';
+
 import express from 'express';
 
 import { ApolloServer } from 'apollo-server-express';
+import { buildSchema } from 'type-graphql';
+import { FileResolver } from './resolvers';
+import { graphqlUploadExpress } from 'graphql-upload';
 
 async function main() {
   const app = express();
 
-  const typeDefs = `
-    type Query {
-      hello: String
-    }
-  `;
+  const schema = await buildSchema({ resolvers: [FileResolver] });
 
-  const resolvers = {
-    Query: {
-      hello: () => 'Hello to graphQL',
-    },
-  };
-
-  const apoloServer = new ApolloServer({
-    typeDefs,
-    resolvers,
-  });
+  const apoloServer = new ApolloServer({ schema });
 
   app.get('/', (_, response) => response.json({ message: 'Server is on' }));
+
+  app.use(
+    '/graphql',
+    graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 })
+  );
 
   apoloServer.applyMiddleware({ app });
 
