@@ -1,1 +1,1 @@
-export { useFiles } from './api_hooks/files/useFiles';
+export { useFiles, useUploadFile } from './api_hooks/files/useFiles';

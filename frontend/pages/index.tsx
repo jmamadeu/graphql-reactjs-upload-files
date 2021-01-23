@@ -3,12 +3,14 @@ import { useEffect, useState } from 'react';
 import DropZone from '../components/DropZone';
 import styles from '../styles/Home.module.css';
 
-import { useFiles } from '../services';
+import { useFiles, useUploadFile } from '../services';
 
 export default function Home() {
   const [files, setFiles] = useState<File[]>([]);
 
   const { data, status } = useFiles();
+
+  const { mutateAsync } = useUploadFile();
 
   return (
     <div className={styles.container}>
@@ -55,14 +57,20 @@ export default function Home() {
           type='button'
           disabled={files.length === 0}
           className='bg-blue-600 p-2 text-white text-medium mt-2 outline-none'
-          onClick={() => {
+          onClick={async () => {
             let formData = new FormData();
 
             files.forEach((file) => {
               formData.append('file', file);
             });
 
-            console.log(formData.getAll('file'));
+            // const { data } = useUploadFile(files[0]);
+
+            try {
+              const allFiles = await mutateAsync(files[0]);
+
+              console.log(allFiles, 'a');
+            } catch (err) {}
           }}
         >
           Send To API
