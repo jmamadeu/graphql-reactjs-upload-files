@@ -3,21 +3,40 @@ import 'reflect-metadata';
 import cors from 'cors';
 import express from 'express';
 import { FileResolver } from './resolvers';
-import { buildSchema } from 'type-graphql';
 import { ApolloServer } from 'apollo-server-express';
+import { GraphQLUpload, graphqlUploadExpress } from 'graphql-upload';
+
+import { makeExecutableSchema } from 'graphql-tools';
+import { buildSchema, buildTypeDefsAndResolvers } from 'type-graphql';
 
 async function main() {
   const app = express();
 
   app.use(cors());
 
-  const schema = await buildSchema({ resolvers: [FileResolver] });
+  const graphqlResolversParsed = await buildTypeDefsAndResolvers({
+    resolvers: [FileResolver],
+  });
 
-  const apoloServer = new ApolloServer({ schema, uploads: true });
+  const schema = makeExecutableSchema({
+    typeDefs: /* GraphQL */ `
+      ${graphqlResolversParsed.typeDefs}
+    `,
+    resolvers: {
+      ...graphqlResolversParsed.resolvers,
+    },
+  });
+
+  app.use(
+    '/graphql',
+    graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 })
+  );
+
+  const apoloServer = new ApolloServer({
+    schema,
+  });
 
   app.get('/', (_, response) => response.json({ message: 'Server is on' }));
-
-  app.use('/graphql');
 
   apoloServer.applyMiddleware({ app });
 
