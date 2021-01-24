@@ -1,4 +1,4 @@
-import { FileUpload, UploadOptions } from 'graphql-upload';
+import { FileUpload, GraphQLUpload } from 'graphql-upload';
 
 import {
   Arg,
@@ -36,8 +36,8 @@ export class FileResolver {
   }
 
   @Mutation(() => File)
-  async uploadFile(@Arg('file') file: FileUpload): Promise<File> {
+  uploadFile(@Arg('file', () => GraphQLUpload) file: FileUpload): Boolean {
     console.log(file);
-    return {} as File;
+    return true;
   }
 }
